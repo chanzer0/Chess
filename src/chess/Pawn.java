@@ -1,17 +1,23 @@
 package chess;
 
-public class Pawn implements Piece{
+public class Pawn extends Piece{
 
-	@Override
-	public String getPosition() {
-		// TODO Auto-generated method stub
-		return null;
+	public Pawn(int x, int y, String color) {
+		super(x, y, color);
 	}
 
 	@Override
-	public String getLegalMoves() {
-		// TODO Auto-generated method stub
-		return null;
+	public int getX() {
+		return super.x;
 	}
 
+	@Override
+	public int getY() {
+		return super.y;
+	}
+
+	@Override
+	public String getColor() {
+		return super.color;
+	}
 }

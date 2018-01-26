@@ -1,17 +1,23 @@
 package chess;
 
-public class Rook implements Piece{
+public class Rook extends Piece{
 
+	public Rook(int x, int y, String color) {
+		super(x, y, color);
+	}
+	
 	@Override
-	public String getPosition() {
-		// TODO Auto-generated method stub
-		return null;
+	public int getX() {
+		return super.x;
 	}
 
 	@Override
-	public String getLegalMoves() {
-		// TODO Auto-generated method stub
-		return null;
+	public int getY() {
+		return super.y;
 	}
 
+	@Override
+	public String getColor() {
+		return super.color;
+	}
 }

@@ -1,16 +1,19 @@
 package chess;
 
-public class Piece {
-	private String color;
-	private int x;
-	private int y;
+public abstract class Piece{
+	protected int x;
+	protected int y;
+	protected String color;
 	
 	
-	public String getPosition() {
-		return null;
+	public Piece(int x, int y, String color) {
+		this.x = x;
+		this.y = y;
+		this.color = color;
 	}
-	public String getLegalMoves() {
-		return null;
-	}
+	
+	public abstract int getX();
+	public abstract int getY();
+	public abstract String getColor();
 	
 }
