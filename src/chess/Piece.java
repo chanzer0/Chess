@@ -1,9 +1,16 @@
 package chess;
 
-public interface Piece {
-	String position = null;
+public class Piece {
+	private String color;
+	private int x;
+	private int y;
 	
-	public String getPosition();
-	public String getLegalMoves();
+	
+	public String getPosition() {
+		return null;
+	}
+	public String getLegalMoves() {
+		return null;
+	}
 	
 }
