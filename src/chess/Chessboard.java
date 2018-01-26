@@ -1,7 +1,5 @@
 package chess;
 
-import javax.swing.plaf.synth.SynthSeparatorUI;
-
 public class Chessboard {
 	private Tile[][] board = new Tile[8][8];
 
