@@ -1,5 +1,7 @@
 package chess;
 
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
 public class Chessboard {
 	private Tile[][] board = new Tile[8][8];
 
@@ -12,11 +14,11 @@ public class Chessboard {
 	}
 
 	public void printBoard() {
-		System.out.println(board[0][7].isOccupied);
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
 				if (board[i][j].isOccupied) {
-					System.out.print(board[i][j].piece.identifier);
+					if (j == 0) {System.out.print("|");}
+					System.out.print(board[i][j].piece.identifier + "|");
 				} else {
 					System.out.print(" ");
 				}
@@ -31,7 +33,7 @@ public class Chessboard {
 				if (i == 0) { // if on the 8th rank, fill with standard chess setup (RNBQKBNR) black
 					Rook r = new Rook(i, 0, "Black", "R");
 					board[i][0] = new Tile(i, 0, true, r);
-					Knight n = new Knight(i, 1, "Black", "K");
+					Knight n = new Knight(i, 1, "Black", "N");
 					board[i][1] = new Tile(i, 1, true, n);
 					Bishop b = new Bishop(i, 2, "Black", "B");
 					board[i][2] = new Tile(i, 2, true, b);
@@ -45,19 +47,16 @@ public class Chessboard {
 					board[i][6] = new Tile(i, 6, true, ni);
 					Rook ro = new Rook(i, 7, "Black", "R");
 					board[i][7] = new Tile(i, 7, true, ro);
-				}
-				if (i == 1) { // if on the 7th rank, fill with black pawns
+				} else if (i == 1) { // if on the 7th rank, fill with black pawns
 					Pawn p = new Pawn(i, j, "Black", "p");
 					board[i][j] = new Tile(i, j, true, p);
-				}
-				if (i == 6) { // if on the 2nd rank, fill with white pawns
+				} else if (i == 6) { // if on the 2nd rank, fill with white pawns
 					Pawn p = new Pawn(i, j, "White", "p");
 					board[i][j] = new Tile(i, j, true, p);
-				}
-				if (i == 7) { // if on the 1st rank, fill with standard chess setup (RNBQKBNR) white
+				} else if (i == 7) { // if on the 1st rank, fill with standard chess setup (RNBQKBNR) white
 					Rook r = new Rook(i, 0, "White", "R");
 					board[i][0] = new Tile(i, 0, true, r);
-					Knight n = new Knight(i, 1, "White", "K");
+					Knight n = new Knight(i, 1, "White", "N");
 					board[i][1] = new Tile(i, 1, true, n);
 					Bishop b = new Bishop(i, 2, "White", "B");
 					board[i][2] = new Tile(i, 2, true, b);
