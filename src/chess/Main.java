@@ -2,7 +2,7 @@ package chess;
 
 public class Main {
 	public static void main(String[] args) {
-		Chessboard cb = new Chessboard("Classical");
+		Chessboard cb = new Chessboard("Chess960");
 		cb.printBoard();
 	}
 }
