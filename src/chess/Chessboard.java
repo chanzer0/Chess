@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Chessboard {
 	private Tile[][] board = new Tile[8][8];
-
+	
 	public Chessboard(String gametype) {
 		if (gametype.toLowerCase().equals("classical")) {
 			initClassical();
@@ -12,25 +12,25 @@ public class Chessboard {
 			initChess960();
 		}
 	}
-	
+
 	/*
 	 * Will print out the current board position as such:
 	 * 
-	 * |R|N|B|Q|K|B|N|R|
-	 * |p|p|p|p|p|p|p|p|
-     *
-     *  
-     *  
-     *  
-	 * |p|p|p|p|p|p|p|p|
-	 * |R|N|B|Q|K|B|N|R|
+	 * |R|N|B|Q|K|B|N|R| |p|p|p|p|p|p|p|p|
+	 *
+	 * 
+	 * 
+	 * 
+	 * |p|p|p|p|p|p|p|p| |R|N|B|Q|K|B|N|R|
 	 * 
 	 */
 	public void printBoard() {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
 				if (board[i][j].isOccupied) {
-					if (j == 0) {System.out.print("|");}
+					if (j == 0) {
+						System.out.print("|");
+					}
 					System.out.print(board[i][j].piece.identifier + "|");
 				} else {
 					System.out.print(" ");
@@ -41,16 +41,16 @@ public class Chessboard {
 	}
 
 	/*
-	 * Chess is played on an 8x8 board, with the 1st and 8th ranks being composed of the composition [RNBQKBNR].
-	 * where R->Rook, N->Knight, B->Bishop, Q->Queen, K->King.
-	 * In front of each players back rank, on the 2nd and 7th ranks, are a row of pawns [pppppppp].
-	 * In between, ranks 3, 4, and 5, are all empty.
+	 * Chess is played on an 8x8 board, with the 1st and 8th ranks being composed of
+	 * the composition [RNBQKBNR]. where R->Rook, N->Knight, B->Bishop, Q->Queen,
+	 * K->King. In front of each players back rank, on the 2nd and 7th ranks, are a
+	 * row of pawns [pppppppp]. In between, ranks 3, 4, and 5, are all empty.
 	 */
 	private void initClassical() {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
 				if (i == 0) { // if on the 8th rank, fill with standard chess setup (RNBQKBNR) black
-					generateBackRankClassical(i);
+					generateBackRankClassical(i, "Black");
 				} else if (i == 1) { // if on the 7th rank, fill with black pawns
 					Pawn p = new Pawn(i, j, "Black", "p");
 					board[i][j] = new Tile(i, j, true, p);
@@ -58,7 +58,7 @@ public class Chessboard {
 					Pawn p = new Pawn(i, j, "White", "p");
 					board[i][j] = new Tile(i, j, true, p);
 				} else if (i == 7) { // if on the 1st rank, fill with standard chess setup (RNBQKBNR) white
-					generateBackRankClassical(i);
+					generateBackRankClassical(i, "White");
 				} else { // else, the board must have an empty tile at this position
 					board[i][j] = new Tile(i, j, false, null);
 				}
@@ -66,26 +66,26 @@ public class Chessboard {
 		}
 		return;
 	}
-	
+
 	/*
 	 * Helper method for reducing duplicate code in initClassical()
 	 */
-	private void generateBackRankClassical(int i) {
-		Rook r = new Rook(i, 0, "White", "R");
+	private void generateBackRankClassical(int i, String color) {
+		Rook r = new Rook(i, 0, color, "R");
 		board[i][0] = new Tile(i, 0, true, r);
-		Knight n = new Knight(i, 1, "White", "N");
+		Knight n = new Knight(i, 1, color, "N");
 		board[i][1] = new Tile(i, 1, true, n);
-		Bishop b = new Bishop(i, 2, "White", "B");
+		Bishop b = new Bishop(i, 2, color, "B");
 		board[i][2] = new Tile(i, 2, true, b);
-		Queen q = new Queen(i, 3, "White", "Q");
+		Queen q = new Queen(i, 3, color, "Q");
 		board[i][3] = new Tile(i, 3, true, q);
-		King k = new King(i, 4, "White", "K");
+		King k = new King(i, 4, color, "K");
 		board[i][4] = new Tile(i, 4, true, k);
-		Bishop bi = new Bishop(i, 5, "White", "B");
+		Bishop bi = new Bishop(i, 5, color, "B");
 		board[i][5] = new Tile(i, 5, true, bi);
-		Knight ni = new Knight(i, 6, "White", "N");
+		Knight ni = new Knight(i, 6, color, "N");
 		board[i][6] = new Tile(i, 6, true, ni);
-		Rook ro = new Rook(i, 7, "White", "R");
+		Rook ro = new Rook(i, 7, color, "R");
 		board[i][7] = new Tile(i, 7, true, ro);
 	}
 
@@ -94,75 +94,120 @@ public class Chessboard {
 	 * the same board and pieces as standard chess, but the starting position of the
 	 * pieces on the players' home ranks is randomized with a few caveats 1. The
 	 * bishops must be placed on opposite colored squares 2. the king must be placed
-	 * between the 2 rooks. Note that while the back rank positions are randomized for 
-	 * each game, the players must share the same randomized back rank position.
+	 * between the 2 rooks. Note that while the back rank positions are randomized
+	 * for each game, the players must share the same randomized back rank position.
 	 * 
-	 * The composition of this function is similar to initClassical() except that instead
-	 * of generating the back ranks in order, we use a helper function that creates one of 
-	 * the 960 possible positions and assigns it to the back rank.
+	 * The composition of this function is similar to initClassical() except that
+	 * instead of generating the back ranks in order, we use a helper function that
+	 * creates one of the 960 possible positions and assigns it to the back rank.
 	 */
 	private void initChess960() {
-//		for (int i = 0; i < 8; i++) {
-//			for (int j = 0; j < 8; j++) {
-//				if (i == 0) { // if on the 8th rank, fill with standard chess setup (RNBQKBNR) black
-//					generateBackRank960();
-//				} else if (i == 1) { // if on the 7th rank, fill with black pawns
-//					Pawn p = new Pawn(i, j, "Black", "p");
-//					board[i][j] = new Tile(i, j, true, p);
-//				} else if (i == 6) { // if on the 2nd rank, fill with white pawns
-//					Pawn p = new Pawn(i, j, "White", "p");
-//					board[i][j] = new Tile(i, j, true, p);
-//				} else if (i == 7) { // if on the 1st rank, fill with standard chess setup (RNBQKBNR) white
-//					generateBackRank960();
-//				} else { // else, the board must have an empty tile at this position
-//					board[i][j] = new Tile(i, j, false, null);
-//				}
-//			}
-//		}
-		generateBackRank960();
+		generateBackRank960(0);
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if (i == 0){
+					//do nothing, as the first call to generateRandomBackRank960() will create the 1st rank position
+				} else if (i == 1) { // if on the 7th rank, fill with black pawns
+					Pawn p = new Pawn(i, j, "Black", "p");
+					board[i][j] = new Tile(i, j, true, p);
+				} else if (i == 6) { // if on the 2nd rank, fill with white pawns
+					Pawn p = new Pawn(i, j, "White", "p");
+					board[i][j] = new Tile(i, j, true, p);
+				} else if (i == 7) { // only here to not include in the else{} statement below
+					// do nothing, as the first call to generateBackRank960() will create the 7th rank position
+				} else { // else, the board must have an empty tile at this position
+					board[i][j] = new Tile(i, j, false, null);
+				}
+			}
+		}
 		return;
 	}
 
 	/*
-	 * Helper method to reduce duplicate code in initChess960().
-	 * This method generates a random back rank using generateRandomBackRank()
-	 * and then checks to see if that position is valid given the rules
-	 * of Chess 960, which again, are as follows:
-	 *      1. King must be between the 2 rooks
-	 *      2. Bishops must be on opposite colors
+	 * Helper method to reduce duplicate code in initChess960(). This method
+	 * generates a random back rank using randomBackRank() and then checks to see if
+	 * that position is valid given the rules of Chess 960
 	 * 
-	 * If the position is valid, it applies it to the board,
-	 * otherwise, the function will generate another random back rank
-	 * and test compliance again.
+	 * If the position is valid, it applies it to the board, otherwise, the function
+	 * will generate another random back rank and test compliance again.
 	 */
-	
-	private void generateBackRank960() {
-		String[] randomBackRank = generateRandomBackRank();
-		
+
+	private void generateBackRank960(int i) {
+		Piece[] backRank = randomBackRank(i, "Black");
+		do {
+			backRank = randomBackRank(i, "Black");
+		} while (!isValid(backRank));
+
+		for (int j = 0; j < backRank.length; j++) {
+			backRank[j].x = j;
+			board[i][j] = new Tile(i, j, true, backRank[j]);
+			backRank[j].y = i + 7;
+			board[i + 7 ][j] = new Tile(i + 7, j, true, backRank[j]);
+		}
 	}
-	
+
+	/*
+	 * This method returns true if the given randomBackRank given is valid given the
+	 * rules of Chess960 1. King must be between the 2 rooks 2. Bishops must be on
+	 * opposite colors
+	 */
+	private Boolean isValid(Piece[] randomBackRank) {
+		/*
+		 * boolBishop -> The boolean for satisfying the bishop condition
+		 * boolKing[Left/Right] -> Satisfying the king condition (either left or right
+		 * side)
+		 */
+		boolean boolBishop = false;
+		boolean boolKingLeft = false;
+		boolean boolKingRight = false;
+		for (int i = 0; i < randomBackRank.length; i++) {
+			/*
+			 * Bishops must be placed where 1 is on an even index and one is on an odd index
+			 * for the requirement of opposite-colored bishops.
+			 */
+			if (randomBackRank[i].identifier == "B") {
+				for (int j = i + 1; j < randomBackRank.length; j++) {
+					if (randomBackRank[j].identifier == "B") {
+						if (i % 2 != j % 2) {boolBishop = true;}
+					}
+				}
+			}
+			/*
+			 * A rook must be found on either side of the king to satisfy the requirement
+			 * that the king be between both rooks.
+			 */
+			if (randomBackRank[i].identifier == "K") {
+				for (int j = i; j >= 0; j--) { // check left side
+					if (randomBackRank[j].identifier == "R") {boolKingLeft = true;}
+				}
+				for (int j = i; j < randomBackRank.length; j++) { // check right side
+					if (randomBackRank[j].identifier == "R") {boolKingRight = true;}
+				}
+			}
+		}
+		return (boolBishop && boolKingLeft && boolKingRight);
+	}
+
 	/*
 	 * Helper method that returns a randomly generated array of back rank pieces
 	 */
-	private String[] generateRandomBackRank() {
-		String[] availablePieces = {"R", "N", "B", "Q", "K", "B", "N", "R"};
-		for (int i = availablePieces.length - 1; i > 0; i--) {
-			Random r = new Random();
-			int j = r.nextInt(i);
-			String swap = availablePieces[i];
-			availablePieces[i] = availablePieces[j];
+	private Piece[] randomBackRank(int i, String color) {
+		Rook r = new Rook(i, 9, color, "R");
+		Rook ro = new Rook(i, 9, color, "R");
+		Knight n = new Knight(i, 9, color, "N");
+		Knight ni = new Knight(i, 9, color, "N");
+		Bishop b = new Bishop(i, 9, color, "B");
+		Bishop bi = new Bishop(i, 9, color, "B");
+		Queen q = new Queen(i, 9, color, "Q");
+		King k = new King(i, 9, color, "K");
+		Piece[] availablePieces = { r, ro, n, ni, q, k, b, bi };
+		for (int z = availablePieces.length - 1; z > 0; z--) {
+			Random rand = new Random();
+			int j = rand.nextInt(z);
+			Piece swap = availablePieces[z];
+			availablePieces[z] = availablePieces[j];
 			availablePieces[j] = swap;
 		}
 		return availablePieces;
 	}
 }
-
-
-
-
-
-
-
-
-
-
