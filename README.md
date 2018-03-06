@@ -1,0 +1,8 @@
+# Chess
+Chess is a two-player strategy board game played on a chessboard, with 64 squares arranged in an 8×8 grid. Each player begins with 16 pieces: one king, one queen, two rooks, two knights, two bishops, and eight pawns. Each of the six piece types moves differently, with the most powerful being the queen and the least powerful the pawn. The objective is to checkmate the opponent's king by placing it under an inescapable threat of capture. To this end, a player's pieces are used to attack and capture the opponent's pieces, while supporting each other. In addition to checkmate, the game can be won by voluntary resignation of the opponent, which typically occurs when too much material is lost or checkmate appears inevitable. There are also several ways a game can end in a draw.
+
+## How to Run
+To run this program, you'll need a Java compiler. Clone this repository to your machine, or just download the files as a .zip. Compile and run 'guiTest.java' to begin.
+
+## Chess960
+This program also offers Chess960, also called Fischer Random Chess (originally Fischerandom), is a variant of chess invented and advocated by former world chess champion Bobby Fischer. It employs the same board and pieces as standard chess, but the starting position of the pieces on the players' home ranks is randomized. The random setup renders the prospect of obtaining an advantage through the memorization of opening lines impractical, compelling players to rely on their talent and creativity.
