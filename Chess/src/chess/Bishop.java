@@ -1,90 +1,60 @@
 package chess;
 
 import java.util.ArrayList;
-
+//
 public class Bishop extends Piece {
 
-	public Bishop(int row, int col, Color color, PieceType identifier) {
+	public Bishop(int row, int col, PlayerEnum color, PieceType identifier) {
 		super(row, col, color, identifier);
 	}
+	
+	public Bishop(Piece piece) {
+		super(piece);
+	}
 
-	@Override
-	public Tile[] getAvailableMoves(Tile[][] board) {
+	public ArrayList<Tile> getAvailableMoves(Board board) {
 		ArrayList<Tile> legalMoves = new ArrayList<Tile>();
-		boolean flag = false;
-
-		int row1 = row - 1;
-		int col1 = col - 1;
-		// Check up diagonal left
-		while (row1 >= 0 && col1 >= 0) {
-			if (!board[row1][col1].isOccupied && !flag) {
-				legalMoves.add(board[row1][col1]);
-			} else if (board[row1][col1].isOccupied && board[row1][col1].piece.color != this.color && !flag) {
-				legalMoves.add(board[row1][col1]);
-				flag = true;
-			} else if (board[row1][col1].isOccupied && board[row1][col1].piece.color == this.color && !flag) {
-				flag = true;
+		
+		for (int bRow = 0; bRow < 8; bRow++) {
+			for (int bCol = 0; bCol < 8; bCol++) {
+				if (this.isValidMove(board.getBoard(), this.row, this.col, bRow, bCol)) {
+					legalMoves.add(board.getTile(bRow, bCol));
+				}
 			}
-			col1 -= 1;
-			row1 -= 1;
 		}
-		flag = false;
-
-		row1 = row - 1;
-		col1 = col + 1;
-		// Check up diagonal right
-		while (row1 >= 0 && col1 < 8) {
-			if (!board[row1][col1].isOccupied && !flag) {
-				legalMoves.add(board[row1][col1]);
-			} else if (board[row1][col1].isOccupied && board[row1][col1].piece.color != this.color && !flag) {
-				legalMoves.add(board[row1][col1]);
-				flag = true;
-			} else if (board[row1][col1].isOccupied && board[row1][col1].piece.color == this.color && !flag) {
-				flag = true;
+		return legalMoves;
+	}
+	
+	@Override
+	public boolean isValidMove(Tile[][] board, int fromRow, int fromCol, int toRow, int toCol) {
+		// needs to move diagonally
+		if (fromRow == toRow || fromCol == toCol) return false;
+		if (board[toRow][toCol].isOccupied && board[toRow][toCol].piece.color == this.color) return false;
+		
+		// needs to move the same amount of col and row (diagonal)
+		if (Math.abs(fromRow - toRow) != Math.abs(fromCol - toCol)) return false;
+		
+		// if current row is less then next row, we want to increment rows else decrement
+		int rowOffset = fromRow < toRow ? 1 : -1;
+		// if current col is less then next col, we want to increment columns else decrement
+		int colOffset = fromCol < toCol ? 1 : -1;
+		
+		boolean flag = true;
+		int y = fromCol + colOffset;
+		for (int x = fromRow + rowOffset; x != toRow; x += rowOffset) {
+			// if there is a piece in the way you can't move there
+			if (!flag) return false;
+			if (board[x][y].isOccupied) {
+				if (board[x][y].piece.color == this.color) {
+					return false;
+				} else {
+					flag = false;
+				}
 			}
-			col1 += 1;
-			row1 -= 1;
+			
+			y += colOffset;
 		}
-		flag = false;
-
-		row1 = row + 1;
-		col1 = col - 1;
-		// Check down diagonal left on the file
-		while (row1 < 8 && col1 >= 0) {
-			if (!board[row1][col1].isOccupied && !flag) {
-				legalMoves.add(board[row1][col1]);
-			} else if (board[row1][col1].isOccupied && board[row1][col1].piece.color != this.color && !flag) {
-				legalMoves.add(board[row1][col1]);
-				flag = true;
-			} else if (board[row1][col1].isOccupied && board[row1][col1].piece.color == this.color && !flag) {
-				flag = true;
-			}
-			col1 -= 1;
-			row1 += 1;
-		}
-		flag = false;
-
-		row1 = row + 1;
-		col1 = col + 1;
-		// Check down diagonal right on the file
-		while (row1 < 8 && col1 < 8) {
-			if (!board[row1][col1].isOccupied && !flag) {
-				legalMoves.add(board[row1][col1]);
-			} else if (board[row1][col1].isOccupied && board[row1][col1].piece.color != this.color && !flag) {
-				legalMoves.add(board[row1][col1]);
-				flag = true;
-			} else if (board[row1][col1].isOccupied && board[row1][col1].piece.color == this.color && !flag) {
-				flag = true;
-			}
-			col1 += 1;
-			row1 += 1;
-
-		}
-		flag = false;
-
-		Tile[] ret = new Tile[legalMoves.size()];
-		System.out.print("arraylist: " + legalMoves.size() + " ");
-		System.out.print("array: " + ret.length + "\n");
-		return legalMoves.toArray(ret);
+		
+		return flag;
 	}
 }

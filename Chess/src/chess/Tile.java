@@ -1,9 +1,11 @@
 package chess;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class Tile extends JPanel {
@@ -16,55 +18,74 @@ public class Tile extends JPanel {
 	public Tile(int row, int col, boolean isOccupied, Piece piece) {
 		this.row = row;
 		this.col = col;
-		this.isOccupied = isOccupied;
 		this.piece = piece;
+		this.isOccupied = isOccupied;
 	}
 	
-	public void moveTo(Tile moveTo, Tile[][] board) {
-		if (moveTo.isOccupied) {
-			if (!this.piece.canAttack(moveTo.piece)) return;
+	public Tile(int row, int col) {
+		this.row = row;
+		this.col = col;
+		this.isOccupied = false;
+		this.piece = null;
+	}
+	
+	public boolean moveTo(Tile moveTo, Board board) {
+		if (moveTo.isOccupied && this.piece.canAttack(moveTo.piece)) {
+			board.getCurrentPlayer().capturePiece(moveTo.piece, board);
 		}
-		// this is tile you are moving, tile is
-		this.piece.move(moveTo.row, moveTo.col);
-		// Castling contingent
-		{
-			// East
-			if(this.piece.identifier == PieceType.King && !this.piece.hasMoved
-					&& moveTo.col == 6){
-				//Move east rook to tile[moveTo.row][5]
-				board[moveTo.row][5].piece = board[moveTo.row][7].piece;
-				board[moveTo.row][5].isOccupied = true;
-				board[moveTo.row][7].removePiece();
-				Image dimg = board[moveTo.row][5].piece.img.getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-				ImageIcon imageIcon = new ImageIcon(dimg);
-				board[moveTo.row][7].add(new JLabel(imageIcon));
+		
+		boolean tempMoved = this.piece.hasMoved;
+		Piece tempPiece = moveTo.piece;
+
+		if (this.piece.move(moveTo, board)) {
+			this.removePiece();
+			board.doCheck();
+			// this move put the player in check, undo
+			if (board.getCurrentPlayer().getCheck()) {
+				moveTo.piece.move(this, board);
+				moveTo.piece.hasMoved = tempMoved;
+				moveTo.setPiece(tempPiece);
+				
+				JOptionPane.showMessageDialog(board.gui.f, "This move would put your king in check, please try another move.");
+				return false;
 			}
-			// West
-			if(this.piece.identifier == PieceType.King && !this.piece.hasMoved
-					&& moveTo.col == 2){
-				//Move west rook to tile[moveTo.row][3]
-				board[moveTo.row][3].piece = board[moveTo.row][0].piece;
-				board[moveTo.row][3].isOccupied = true;
-				board[moveTo.row][0].removePiece();
-				Image dimg = board[moveTo.row][3].piece.img.getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-				ImageIcon imageIcon = new ImageIcon(dimg);
-				board[moveTo.row][0].add(new JLabel(imageIcon));
-			}
+			return true;
 		}
-		moveTo.removeAll();
-		moveTo.isOccupied = true;
-		moveTo.piece = this.piece;
-		this.piece.hasMoved = true;
-		this.removePiece();
-		Image dimg = moveTo.piece.img.getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-		ImageIcon imageIcon = new ImageIcon(dimg);
-		moveTo.add(new JLabel(imageIcon));
+
+		return false;
+	}
+	
+	public void setPiece(Piece piece) {
+		this.removeAll();
+		this.isOccupied = piece == null ? false : true;
+		this.piece = piece;
+		this.setImage();
 	}
 
 	public void removePiece() {
 		this.piece = null;
 		this.isOccupied = false;
-		this.removeAll();
+		this.setImage();
 		this.setBorder(null);
 	}
+	
+	public Piece getPiece(){
+		
+		return this.piece;
+		
+	}
+	
+	public void setImage() {
+		this.removeAll();
+		if (this.isOccupied) {
+			Image dimg = this.piece.img.getScaledInstance(50, 60, Image.SCALE_SMOOTH);
+			ImageIcon imageIcon = new ImageIcon(dimg);
+			this.add(new JLabel(imageIcon));
+		} else {
+			ImageIcon icon = new ImageIcon(
+                    new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB));
+            this.add(new JLabel(icon));
+		}
+	}
 }
+

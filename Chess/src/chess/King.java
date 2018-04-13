@@ -3,68 +3,81 @@ package chess;
 import java.util.ArrayList;
 
 public class King extends Piece {
-
-	public King(int row, int col, Color color, PieceType identifier) {
+	
+	public King(int row, int col, PlayerEnum color, PieceType identifier) {
 		super(row, col, color, identifier);
 	}
-
-	@Override
-	public Tile[] getAvailableMoves(Tile[][] board) {
-		// TODO Auto-generated method stub
+	
+	public King(Piece piece) {
+		super(piece);
+	}
+	
+	public ArrayList<Tile> getAvailableMoves(Board board) {
 		ArrayList<Tile> legalMoves = new ArrayList<Tile>();
+
 		for (int bRow = 0; bRow < 8; bRow++) {
 			for (int bCol = 0; bCol < 8; bCol++) {
-				if ((bRow == row - 1 && bCol == col) || (bRow == row + 1 && bCol == col)
-						|| (bRow == row && bCol == col - 1) || (bRow == row && bCol == col + 1)
-						|| (bRow == row - 1 && bCol == col - 1) || (bRow == row + 1 && bCol == col + 1)
-						|| (bRow == row - 1 && bCol == col + 1) || (bRow == row + 1 && bCol == col - 1)) {
-					if (board[bRow][bCol].isOccupied == false || board[bRow][bCol].piece.color != this.color) {
-						legalMoves.add(board[bRow][bCol]);
-					}
+				if (isValidMove(board.getBoard(), this.row, this.col, bRow, bCol)) {
+					legalMoves.add(board.getTile(bRow, bCol));
 				}
 			}
 		}
-		Tile[] temp = new Tile[legalMoves.size()];
-		return legalMoves.toArray(temp);
 		
-		/*
-		// Castling short
-		boolean valid = true;
-		int side = 0;
-		if(this.color == Player.White) {
-			side = 7;
-		}
-		for(int j = 1; j < 3; j++) {
-			if(board[side][j + 4].isOccupied || !this.hasMoved) {
-				valid = false;
+
+		return legalMoves;
+	}
+	
+	@Override
+	public boolean isValidMove(Tile[][] board, int fromRow, int fromCol, int toRow, int toCol) {
+		if (fromRow == toRow && fromCol == toCol) return false;
+		// maybe castling
+		if (fromRow == toRow) {
+			if (Math.abs(toCol - fromCol) >= 2) return false;
+			int offset = fromCol < toCol ? 1 : -1;
+			
+			for (int y = fromCol + offset; y != toCol; y += offset) {
+				if (board[toRow][y].isOccupied && board[toRow][y].piece.identifier != PieceType.King) {
+					return false;
+				}
 			}
 		}
-		if(board[side][7].isOccupied && board[side][7].piece.identifier == PieceType.Rook
-				&& this.color == board[side][7].piece.color
-				&& !board[side][7].piece.hasMoved && valid) {
-			i++;
-			available[i] = board[side][6];
+		
+		if (Math.abs(fromRow - toRow) <= 1 && Math.abs(fromCol - toCol) <= 1) {
+			if (board[toRow][toCol].isOccupied && board[toRow][toCol].piece.color == this.color) return false;
+			return true;
 		}
-		// Castling long
-		valid = true;
-		side = 0;
-		if(this.color == Player.White) {
-			side = 7;
-		}
-		for(int j = 1; j < 4; j++) {
-			if(board[side][4 - j].isOccupied || !this.hasMoved) {
-				valid = false;
+		
+		return false;
+	}
+	
+
+	@Override
+	public boolean move(Tile moveTo, Board b) {
+		Tile[][] board = b.getBoard();
+		if (Math.abs(this.col - moveTo.col) >= 2 && !hasMoved) { // castling
+			// move rook
+			if (moveTo.col < this.col) {
+				// rook in the left corner
+				b.getTile(this.row, 0).moveTo(board[this.row][moveTo.col + 1], b);
+			} else {
+				// rook in the right corner
+				b.getTile(this.row, 7).moveTo(board[this.row][moveTo.col - 1], b);
 			}
 		}
-		if(board[side][0].isOccupied && board[side][0].piece.identifier == PieceType.Rook
-				&& this.color == board[side][0].piece.color
-				&& !board[side][0].piece.hasMoved && valid) {
-			i++;
-			available[i] = board[side][2];
+		
+		if (b.getCurrentPlayer().getCheck()) {
+			this.row = moveTo.row;
+			this.col = moveTo.col;
+			this.hasMoved = true;
+			moveTo.setPiece(this);
+			return false;
 		}
 		
-		return available;
-		
-		*/
+		this.row = moveTo.row;
+		this.col = moveTo.col;
+		this.hasMoved = true;
+		moveTo.setPiece(this);
+
+		return true;
 	}
 }

@@ -19,23 +19,27 @@ public class testRookAvailableMoves {
 		/*
 		 * This initializes an 8x8 board to empty tiles
 		 */
-		Tile[][] testBoard = new Tile[8][8];
+		Board cb = new Board(new ChessGUI());
+		Tile[][] testBoard = cb.getBoard();
 		for (int col = 0; col < 8; col++) {
 			for (int row = 0; row < 8; row++) {
 				Tile t = new Tile(row, col, false, null);
 				testBoard[col][row] = t;
 			}
 		}
+		Rook testRook = new Rook(2, 1, PlayerEnum.White, PieceType.Rook);
+		testBoard[2][1] = new Tile(2, 1, true, testRook);
 		
 		/*
 		 * Create new rook, place it on the board
 		 */
-		Rook testRook = new Rook(2, 1, Color.White, PieceType.Rook);
+		Rook testRook2 = new Rook(2, 1, PlayerEnum.White, PieceType.Rook);
 		testBoard[testRook.row][testRook.col] = new Tile(testRook.row, testRook.col, true, testRook);
 		/*
 		 * Get legalMoves and expectedMoves 
 		 */
-		Tile[] legalMoves = testRook.getAvailableMoves(testBoard);
+		ArrayList<Tile> temp = testRook.getAvailableMoves(cb);
+		Tile[] legalMoves = temp.toArray(new Tile[temp.size()]);
 		Tile[] expectedMoves = getExpectedMoves(testRook, testBoard);
 		
 		/*
@@ -57,8 +61,7 @@ public class testRookAvailableMoves {
 	@Test
 	public void testInitClassicalBoard() {
 		
-		classicalChessBoard board = new classicalChessBoard();
-		board.initBoard();
+		ChessClassical board = new ChessClassical(new ChessGUI());
 		Tile[][] testBoard = board.getBoard();
 		/*
 		 * Make rooks (2 for white side, 2 for black side)
@@ -71,10 +74,10 @@ public class testRookAvailableMoves {
 		/*
 		 * Get the available moves from each rook
 		 */
-		Tile[] whiteRook1Moves = whiteRook1.getAvailableMoves(testBoard);
-		Tile[] whiteRook2Moves = whiteRook2.getAvailableMoves(testBoard);
-		Tile[] blackRook1Moves = blackRook1.getAvailableMoves(testBoard);
-		Tile[] blackRook2Moves = blackRook2.getAvailableMoves(testBoard);
+		Tile[] whiteRook1Moves = (Tile[]) whiteRook1.getAvailableMoves(board).toArray();
+		Tile[] whiteRook2Moves = (Tile[]) whiteRook2.getAvailableMoves(board).toArray();
+		Tile[] blackRook1Moves = (Tile[]) blackRook1.getAvailableMoves(board).toArray();
+		Tile[] blackRook2Moves = (Tile[]) blackRook2.getAvailableMoves(board).toArray();
 		
 		/*
 		 * These are all empty, as if there are no available moves, getLegalMoves() 
@@ -111,7 +114,7 @@ public class testRookAvailableMoves {
 		/*
 		 * Create a new classical board and empty it
 		 */
-		classicalChessBoard testBoard = new classicalChessBoard();
+		ChessClassical testBoard = new ChessClassical(new ChessGUI());
 		
 		/*
 		 * Tests 64 iterations of 5 random piece placements 
@@ -127,7 +130,7 @@ public class testRookAvailableMoves {
 			int randRow = rand.nextInt(8); // [0-7]
 			int randCol = rand.nextInt(8); // [0-7]
 			int randColor = rand.nextInt(2); // [0-1]
-			Color playerColor = (randColor == 1) ? Color.White : Color.Black; // Choose White if 1, Black if 0
+			PlayerEnum playerColor = (randColor == 1) ? PlayerEnum.White : PlayerEnum.Black; // Choose White if 1, Black if 0
 			Rook testRook = new Rook(randRow, randCol, playerColor, PieceType.Rook);
 			testBoard.placeTile(new Tile (randRow, randCol, true, testRook)); // Add it to the board
 			
@@ -137,7 +140,7 @@ public class testRookAvailableMoves {
 			randRow = rand.nextInt(8); // [0-7]
 			randCol = rand.nextInt(8); // [0-7]
 			randColor = rand.nextInt(2); // [0-1]
-			playerColor = (randColor == 1) ? Color.White : Color.Black; // Choose White if 1, Black if 0
+			playerColor = (randColor == 1) ? PlayerEnum.White : PlayerEnum.Black; // Choose White if 1, Black if 0
 			Bishop testBishop = new Bishop(randRow, randCol, playerColor, PieceType.Bishop); // Create piece
 			testBoard.placeTile(new Tile (randRow, randCol, true, testBishop)); // Add it to the board
 			
@@ -147,7 +150,7 @@ public class testRookAvailableMoves {
 			randRow = rand.nextInt(8); // [0-7]
 			randCol = rand.nextInt(8); // [0-7]
 			randColor = rand.nextInt(2); // [0-1]
-			playerColor = (randColor == 1) ? Color.White : Color.Black; // Choose White if 1, Black if 0
+			playerColor = (randColor == 1) ? PlayerEnum.White : PlayerEnum.Black; // Choose White if 1, Black if 0
 			Knight testKnight = new Knight(randRow, randCol, playerColor, PieceType.Knight); // Create piece
 			testBoard.placeTile(new Tile (randRow, randCol, true, testKnight)); // Add it to the board
 			
@@ -157,7 +160,7 @@ public class testRookAvailableMoves {
 			randRow = rand.nextInt(8); // [0-7]
 			randCol = rand.nextInt(8); // [0-7]
 			randColor = rand.nextInt(2); // [0-1]
-			playerColor = (randColor == 1) ? Color.White : Color.Black; // Choose White if 1, Black if 0
+			playerColor = (randColor == 1) ? PlayerEnum.White : PlayerEnum.Black; // Choose White if 1, Black if 0
 			Queen testQueen = new Queen(randRow, randCol, playerColor, PieceType.Queen); // Create piece
 			testBoard.placeTile(new Tile (randRow, randCol, true, testQueen)); // Add it to the board
 			
@@ -167,14 +170,14 @@ public class testRookAvailableMoves {
 			randRow = rand.nextInt(8); // [0-7]
 			randCol = rand.nextInt(8); // [0-7]
 			randColor = rand.nextInt(2); // [0-1]
-			playerColor = (randColor == 1) ? Color.White : Color.Black; // Choose White if 1, Black if 0
+			playerColor = (randColor == 1) ? PlayerEnum.White : PlayerEnum.Black; // Choose White if 1, Black if 0
 			Rook testRook2 = new Rook(randRow, randCol, playerColor, PieceType.Rook); // Create piece
 			testBoard.placeTile(new Tile (randRow, randCol, true, testRook2)); // Add it to the board
 			
 			/*
 			 * Get testRook's available moves
 			 */
-			Tile[] legalMoves = testRook.getAvailableMoves(testBoard.getBoard());
+			Tile[] legalMoves = (Tile[]) testRook.getAvailableMoves(testBoard).toArray();
 			
 			/*
 			 * Analyze the board, get the expected moves for testRook
@@ -188,7 +191,8 @@ public class testRookAvailableMoves {
 			System.out.println("Do you wish to generate a GUI for test #" + (i + 1) + "?\nEnter \"yes\" for yes, or \"no\" for no.\nAlternatively, you may hold enter to skip through all GUI prompts.");
 			String userIn = in.nextLine();
 			if (userIn.toLowerCase().equals("yes")) {
-				chessBoardGUI GUI = new chessBoardGUI(testBoard);
+				ChessGUI GUI = new ChessGUI();
+				GUI.setBoard(testBoard);
 			}
 			assertArrayEquals(expectedMoves, legalMoves);
 			System.out.println("");
